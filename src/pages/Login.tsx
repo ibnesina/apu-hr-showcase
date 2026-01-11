@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn, User, Lock, ChevronDown } from 'lucide-react';
+import { LogIn, User, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/lib/auth';
 import { toast } from 'sonner';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('Admin');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -24,12 +21,12 @@ export default function Login() {
 
     // Simulate login delay
     setTimeout(() => {
-      const success = login(username, password, role);
-      if (success) {
-        toast.success(`Welcome! Logged in as ${role}`);
-        navigate(role === 'Admin' ? '/' : '/faculty-dashboard');
+      const result = login(username, password);
+      if (result) {
+        toast.success(`Welcome, ${result.name}!`);
+        navigate(result.role === 'Admin' ? '/' : '/faculty-dashboard');
       } else {
-        toast.error('Login failed. Please try again.');
+        toast.error('Invalid credentials. Please try again.');
       }
       setIsLoading(false);
     }, 500);
@@ -55,20 +52,6 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Role Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="role">Login As</Label>
-                <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
-                  <SelectTrigger id="role" className="w-full">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Faculty">Faculty (Employee)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
               {/* Username */}
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
@@ -77,7 +60,7 @@ export default function Login() {
                   <Input
                     id="username"
                     type="text"
-                    placeholder={role === 'Admin' ? 'admin' : 'faculty1, faculty2, etc.'}
+                    placeholder="Enter username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="pl-10"
@@ -94,7 +77,7 @@ export default function Login() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Enter any password (demo)"
+                    placeholder="Enter password (any for demo)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-10"
@@ -123,8 +106,8 @@ export default function Login() {
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <p className="text-sm font-medium text-muted-foreground mb-2">Demo Credentials:</p>
               <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>Admin:</strong> username: admin, any password</p>
-                <p><strong>Faculty:</strong> username: faculty1/faculty2/faculty3, any password</p>
+                <p><strong>Admin:</strong> admin (any password)</p>
+                <p><strong>Faculty:</strong> faculty1, faculty2, faculty3 (any password)</p>
               </div>
             </div>
           </CardContent>
