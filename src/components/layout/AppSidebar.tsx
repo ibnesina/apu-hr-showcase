@@ -9,9 +9,11 @@ import {
   BarChart3,
   Bell,
   History,
+  Home,
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
-const menuItems = [
+const adminMenuItems = [
   { title: 'Dashboard', url: '/', icon: LayoutDashboard },
   { title: 'Employees', url: '/employees', icon: Users },
   { title: 'Documents', url: '/documents', icon: FileText },
@@ -23,8 +25,20 @@ const menuItems = [
   { title: 'Audit Logs', url: '/audit-logs', icon: History },
 ];
 
+const facultyMenuItems = [
+  { title: 'My Dashboard', url: '/faculty-dashboard', icon: Home },
+  { title: 'My Attendance', url: '/attendance', icon: Calendar },
+  { title: 'My Leaves', url: '/leave', icon: ClipboardList },
+  { title: 'My Payslips', url: '/payroll', icon: DollarSign },
+  { title: 'Documents', url: '/documents', icon: FileText },
+  { title: 'Notifications', url: '/notifications', icon: Bell },
+];
+
 export function AppSidebar() {
   const location = useLocation();
+  const { isAdmin, isFaculty } = useAuth();
+
+  const menuItems = isAdmin ? adminMenuItems : facultyMenuItems;
 
   return (
     <aside className="w-64 min-h-screen bg-sidebar text-sidebar-foreground flex flex-col">
@@ -36,7 +50,9 @@ export function AppSidebar() {
           </div>
           <div>
             <h1 className="font-semibold text-sm">APU HRMS</h1>
-            <p className="text-xs text-sidebar-foreground/70">Demo Version</p>
+            <p className="text-xs text-sidebar-foreground/70">
+              {isAdmin ? 'Admin Panel' : 'Faculty Portal'}
+            </p>
           </div>
         </div>
       </div>
