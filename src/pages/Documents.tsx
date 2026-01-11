@@ -9,10 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Document } from '@/lib/mockData';
-import { getDocuments, addDocument } from '@/lib/storage';
+import { getDocuments, addDocument, saveDocuments } from '@/lib/storage';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
-const categories = ['Policy', 'Template', 'Finance', 'Training', 'Other'];
+const categories = ['Policy', 'Template', 'Finance', 'Training', 'Personal', 'Other'];
 const fileTypes = ['PDF', 'DOC', 'DOCX', 'XLS'] as const;
 
 const getFileIcon = (type: string) => {
@@ -44,6 +45,7 @@ const getTypeBadgeColor = (type: string) => {
 };
 
 export default function Documents() {
+  const { user, isAdmin, isFaculty } = useAuth();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -51,7 +53,7 @@ export default function Documents() {
     type: 'PDF' as typeof fileTypes[number],
     category: '',
     version: 'v1.0',
-    uploadedBy: 'Admin',
+    uploadedBy: user?.name || 'Admin',
     size: '1.0 MB',
   });
 
@@ -63,6 +65,7 @@ export default function Documents() {
     e.preventDefault();
     addDocument({
       ...formData,
+      uploadedBy: user?.name || 'Admin',
       uploadedDate: new Date().toISOString().split('T')[0],
     });
     setDocuments(getDocuments());
@@ -72,7 +75,7 @@ export default function Documents() {
       type: 'PDF',
       category: '',
       version: 'v1.0',
-      uploadedBy: 'Admin',
+      uploadedBy: user?.name || 'Admin',
       size: '1.0 MB',
     });
     toast.success('Document uploaded successfully');
@@ -83,8 +86,13 @@ export default function Documents() {
   };
 
   const handleDelete = (id: string) => {
+    if (!isAdmin) {
+      toast.error('Only admins can delete documents');
+      return;
+    }
     if (confirm('Are you sure you want to delete this document?')) {
       const updatedDocs = documents.filter(d => d.id !== id);
+      saveDocuments(updatedDocs);
       setDocuments(updatedDocs);
       toast.success('Document deleted successfully');
     }
@@ -94,8 +102,8 @@ export default function Documents() {
     <AppLayout>
       <div className="page-header flex items-center justify-between">
         <div>
-          <h1 className="page-title">Document Repository</h1>
-          <p className="page-description">Manage employee documents and policies</p>
+          <h1 className="page-title">{isFaculty ? 'My Documents' : 'Document Repository'}</h1>
+          <p className="page-description">{isFaculty ? 'View and upload your documents' : 'Manage employee documents and policies'}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -205,9 +213,11 @@ export default function Documents() {
                     <Button variant="ghost" size="icon" onClick={() => handleDownload(doc)}>
                       <Download className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
+                    {isAdmin && (
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(doc.id)}>
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

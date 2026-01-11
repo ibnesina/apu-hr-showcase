@@ -77,6 +77,14 @@ export default function LeaveManagement() {
   };
 
   const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return <span className="status-badge status-pending"><Clock className="w-3 h-3 mr-1" />{status}</span>;
+      case 'Approved':
+        return <span className="status-badge status-approved"><Check className="w-3 h-3 mr-1" />{status}</span>;
+      case 'Rejected':
+        return <span className="status-badge status-rejected"><X className="w-3 h-3 mr-1" />{status}</span>;
+      default:
         return <span className="status-badge">{status}</span>;
     }
   };
@@ -130,6 +138,14 @@ export default function LeaveManagement() {
           </Dialog>
         )}
       </div>
+
+      <Tabs defaultValue="requests" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="requests">
+            {isFaculty ? 'My Requests' : 'Leave Requests'}
+            {pendingCount > 0 && (
+              <span className="ml-2 bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">
+                {pendingCount}
               </span>
             )}
           </TabsTrigger>
@@ -141,20 +157,20 @@ export default function LeaveManagement() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Employee</TableHead>
+                  {isAdmin && <TableHead>Employee</TableHead>}
                   <TableHead>Leave Type</TableHead>
                   <TableHead>Period</TableHead>
                   <TableHead>Days</TableHead>
                   <TableHead>Reason</TableHead>
                   <TableHead>Applied On</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  {isAdmin && <TableHead className="text-right">Actions</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leaveRequests.map((request) => (
+                {displayRequests.map((request) => (
                   <TableRow key={request.id}>
-                    <TableCell className="font-medium">{request.employeeName}</TableCell>
+                    {isAdmin && <TableCell className="font-medium">{request.employeeName}</TableCell>}
                     <TableCell>{request.leaveType}</TableCell>
                     <TableCell>
                       <div className="text-sm">
@@ -166,20 +182,20 @@ export default function LeaveManagement() {
                     <TableCell className="max-w-xs truncate">{request.reason}</TableCell>
                     <TableCell>{request.appliedDate}</TableCell>
                     <TableCell>{getStatusBadge(request.status)}</TableCell>
-                    <TableCell className="text-right">
-                      {request.status === 'Pending' && (
-                        <div className="flex justify-end gap-2">
-                          <Button size="sm" onClick={() => handleApprove(request.id)}>
-                            <Check className="w-4 h-4 mr-1" />
-                            Approve
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => handleReject(request.id)}>
-                            <X className="w-4 h-4 mr-1" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
-                    </TableCell>
+                    {isAdmin && (
+                      <TableCell className="text-right">
+                        {request.status === 'Pending' && (
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" onClick={() => handleApprove(request.id)}>
+                              <Check className="w-4 h-4 mr-1" />Approve
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => handleReject(request.id)}>
+                              <X className="w-4 h-4 mr-1" />Reject
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
