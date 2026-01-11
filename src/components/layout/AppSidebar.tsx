@@ -31,8 +31,8 @@ export function AppSidebar() {
       {/* Logo / Brand */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-lg">APU</span>
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center">
+            <img src="/apu_logo.png" alt="APU Logo" className="w-10 h-10 object-contain" />
           </div>
           <div>
             <h1 className="font-semibold text-sm">APU HRMS</h1>
