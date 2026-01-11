@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole, login as authLogin, logout as authLogout, getCurrentUser } from '@/lib/auth';
+import { User, login as authLogin, logout as authLogout, getCurrentUser } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (username: string, password: string, role: UserRole) => boolean;
+  login: (username: string, password: string) => User | null;
   logout: () => void;
   isAdmin: boolean;
   isFaculty: boolean;
@@ -22,13 +22,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = (username: string, password: string, role: UserRole): boolean => {
-    const loggedInUser = authLogin(username, password, role);
+  const login = (username: string, password: string): User | null => {
+    const loggedInUser = authLogin(username, password);
     if (loggedInUser) {
       setUser(loggedInUser);
-      return true;
+      return loggedInUser;
     }
-    return false;
+    return null;
   };
 
   const logout = () => {
@@ -59,7 +59,7 @@ export function useAuth() {
     return {
       user: null,
       isLoading: true,
-      login: () => false,
+      login: () => null,
       logout: () => {},
       isAdmin: false,
       isFaculty: false,
