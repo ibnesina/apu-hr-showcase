@@ -13,7 +13,7 @@ export interface User {
 
 const AUTH_KEY = 'apu_hr_auth_user';
 
-// Demo users for login
+// Demo users for login - auto-detection based on username
 export const demoUsers: Record<string, User> = {
   'admin': {
     id: 'admin-001',
@@ -49,27 +49,54 @@ export const demoUsers: Record<string, User> = {
   },
 };
 
-export const login = (username: string, password: string, role: UserRole): User | null => {
-  // Demo login - any password works
-  // Admin login
-  if (role === 'Admin' && username.toLowerCase() === 'admin') {
-    const user = demoUsers['admin'];
+// Auto-detect role from username
+export const login = (username: string, password: string): User | null => {
+  const normalizedUsername = username.toLowerCase().trim();
+  
+  // Direct match
+  if (demoUsers[normalizedUsername]) {
+    const user = demoUsers[normalizedUsername];
     sessionStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    // Log login action
+    const logs = JSON.parse(sessionStorage.getItem('apu_hr_audit_logs') || '[]');
+    logs.unshift({
+      id: Date.now().toString(),
+      action: 'Login',
+      module: 'Authentication',
+      user: user.name,
+      timestamp: new Date().toLocaleString('en-GB', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).replace(',', ''),
+      details: `${user.name} logged in as ${user.role}`,
+    });
+    sessionStorage.setItem('apu_hr_audit_logs', JSON.stringify(logs));
     return user;
   }
   
-  // Faculty login - match by username or use default
-  const facultyKey = Object.keys(demoUsers).find(
-    key => key !== 'admin' && (
-      demoUsers[key].name.toLowerCase().includes(username.toLowerCase()) ||
-      demoUsers[key].email.toLowerCase().includes(username.toLowerCase()) ||
-      key === username.toLowerCase()
-    )
+  // Partial match - search by name or email
+  const matchedKey = Object.keys(demoUsers).find(key => 
+    demoUsers[key].name.toLowerCase().includes(normalizedUsername) ||
+    demoUsers[key].email.toLowerCase().includes(normalizedUsername)
   );
   
-  if (role === 'Faculty') {
-    const user = facultyKey ? demoUsers[facultyKey] : demoUsers['faculty1'];
+  if (matchedKey) {
+    const user = demoUsers[matchedKey];
     sessionStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    // Log login action
+    const logs = JSON.parse(sessionStorage.getItem('apu_hr_audit_logs') || '[]');
+    logs.unshift({
+      id: Date.now().toString(),
+      action: 'Login',
+      module: 'Authentication',
+      user: user.name,
+      timestamp: new Date().toLocaleString('en-GB', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).replace(',', ''),
+      details: `${user.name} logged in as ${user.role}`,
+    });
+    sessionStorage.setItem('apu_hr_audit_logs', JSON.stringify(logs));
     return user;
   }
   
@@ -77,6 +104,23 @@ export const login = (username: string, password: string, role: UserRole): User 
 };
 
 export const logout = (): void => {
+  const user = getCurrentUser();
+  if (user) {
+    // Log logout action
+    const logs = JSON.parse(sessionStorage.getItem('apu_hr_audit_logs') || '[]');
+    logs.unshift({
+      id: Date.now().toString(),
+      action: 'Logout',
+      module: 'Authentication',
+      user: user.name,
+      timestamp: new Date().toLocaleString('en-GB', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      }).replace(',', ''),
+      details: `${user.name} logged out`,
+    });
+    sessionStorage.setItem('apu_hr_audit_logs', JSON.stringify(logs));
+  }
   sessionStorage.removeItem(AUTH_KEY);
 };
 

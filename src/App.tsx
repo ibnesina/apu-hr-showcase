@@ -10,7 +10,11 @@ import FacultyDashboard from "./pages/FacultyDashboard";
 import Employees from "./pages/Employees";
 import Documents from "./pages/Documents";
 import LeaveManagement from "./pages/LeaveManagement";
+import LeavePolicies from "./pages/LeavePolicies";
 import Attendance from "./pages/Attendance";
+import ShiftManagement from "./pages/ShiftManagement";
+import HolidayManagement from "./pages/HolidayManagement";
+import PayrollSetup from "./pages/PayrollSetup";
 import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
@@ -40,7 +44,11 @@ function AppRoutes() {
       <Route path="/employees" element={<ProtectedRoute adminOnly><Employees /></ProtectedRoute>} />
       <Route path="/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
       <Route path="/leave" element={<ProtectedRoute><LeaveManagement /></ProtectedRoute>} />
+      <Route path="/leave-policies" element={<ProtectedRoute adminOnly><LeavePolicies /></ProtectedRoute>} />
       <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
+      <Route path="/shifts" element={<ProtectedRoute adminOnly><ShiftManagement /></ProtectedRoute>} />
+      <Route path="/holidays" element={<ProtectedRoute adminOnly><HolidayManagement /></ProtectedRoute>} />
+      <Route path="/payroll-setup" element={<ProtectedRoute adminOnly><PayrollSetup /></ProtectedRoute>} />
       <Route path="/payroll" element={<ProtectedRoute><Payroll /></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

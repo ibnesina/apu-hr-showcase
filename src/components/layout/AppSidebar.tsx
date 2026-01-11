@@ -10,6 +10,9 @@ import {
   Bell,
   History,
   Home,
+  Clock,
+  CalendarDays,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -18,11 +21,15 @@ const adminMenuItems = [
   { title: 'Employees', url: '/employees', icon: Users },
   { title: 'Documents', url: '/documents', icon: FileText },
   { title: 'Leave Management', url: '/leave', icon: ClipboardList },
+  { title: 'Leave Policies', url: '/leave-policies', icon: Settings },
   { title: 'Attendance', url: '/attendance', icon: Calendar },
+  { title: 'Shifts', url: '/shifts', icon: Clock },
+  { title: 'Holidays', url: '/holidays', icon: CalendarDays },
+  { title: 'Payroll Setup', url: '/payroll-setup', icon: Settings },
   { title: 'Payroll', url: '/payroll', icon: DollarSign },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
-  { title: 'Notifications', url: '/notifications', icon: Bell },
   { title: 'Audit Logs', url: '/audit-logs', icon: History },
+  { title: 'Notifications', url: '/notifications', icon: Bell },
 ];
 
 const facultyMenuItems = [
@@ -58,7 +65,7 @@ export function AppSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-1">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.url;
@@ -66,7 +73,7 @@ export function AppSidebar() {
               <li key={item.title}>
                 <NavLink
                   to={item.url}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
                     isActive
                       ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
                       : 'hover:bg-sidebar-accent/50 text-sidebar-foreground/80 hover:text-sidebar-foreground'
