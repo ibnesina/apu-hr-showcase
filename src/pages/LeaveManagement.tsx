@@ -1,22 +1,39 @@
 import { useState, useEffect } from 'react';
-import { Check, X, Clock } from 'lucide-react';
+import { Check, X, Clock, Plus } from 'lucide-react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LeaveRequest, LeavePolicy } from '@/lib/mockData';
-import { getLeaveRequests, getLeavePolicies, updateLeaveRequestStatus } from '@/lib/storage';
+import { getLeaveRequests, getLeavePolicies, updateLeaveRequestStatus, saveLeaveRequests, addAuditLog } from '@/lib/storage';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function LeaveManagement() {
+  const { user, isAdmin, isFaculty } = useAuth();
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [leavePolicies, setLeavePolicies] = useState<LeavePolicy[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    leaveType: '',
+    startDate: '',
+    endDate: '',
+    reason: '',
+  });
 
   useEffect(() => {
     setLeaveRequests(getLeaveRequests());
     setLeavePolicies(getLeavePolicies());
   }, []);
+
+  // Filter requests for faculty
+  const displayRequests = isFaculty ? leaveRequests.filter(r => r.employeeId === user?.id) : leaveRequests;
 
   const handleApprove = (id: string) => {
     updateLeaveRequestStatus(id, 'Approved');
@@ -30,35 +47,89 @@ export default function LeaveManagement() {
     toast.success('Leave request rejected');
   };
 
+  const handleApplyLeave = (e: React.FormEvent) => {
+    e.preventDefault();
+    const startDate = new Date(formData.startDate);
+    const endDate = new Date(formData.endDate);
+    const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    const newRequest: LeaveRequest = {
+      id: Date.now().toString(),
+      employeeId: user?.id || '',
+      employeeName: user?.name || '',
+      leaveType: formData.leaveType,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      days,
+      reason: formData.reason,
+      status: 'Pending',
+      appliedDate: new Date().toISOString().split('T')[0],
+    };
+    
+    const requests = getLeaveRequests();
+    requests.push(newRequest);
+    saveLeaveRequests(requests);
+    addAuditLog('Created', 'Leave Request', `${user?.name} applied for ${formData.leaveType}`);
+    setLeaveRequests(getLeaveRequests());
+    setIsDialogOpen(false);
+    setFormData({ leaveType: '', startDate: '', endDate: '', reason: '' });
+    toast.success('Leave request submitted');
+  };
+
   const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'Pending':
-        return <span className="status-badge status-pending"><Clock className="w-3 h-3 mr-1" />{status}</span>;
-      case 'Approved':
-        return <span className="status-badge status-approved"><Check className="w-3 h-3 mr-1" />{status}</span>;
-      case 'Rejected':
-        return <span className="status-badge status-rejected"><X className="w-3 h-3 mr-1" />{status}</span>;
-      default:
         return <span className="status-badge">{status}</span>;
     }
   };
 
-  const pendingCount = leaveRequests.filter(r => r.status === 'Pending').length;
+  const pendingCount = displayRequests.filter(r => r.status === 'Pending').length;
 
   return (
     <AppLayout>
-      <div className="page-header">
-        <h1 className="page-title">Leave Management</h1>
-        <p className="page-description">Manage leave policies and employee leave requests</p>
+      <div className="page-header flex items-center justify-between">
+        <div>
+          <h1 className="page-title">{isFaculty ? 'My Leaves' : 'Leave Management'}</h1>
+          <p className="page-description">{isFaculty ? 'Apply and track your leave requests' : 'Manage leave policies and employee leave requests'}</p>
+        </div>
+        {isFaculty && (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button><Plus className="w-4 h-4 mr-2" />Apply Leave</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>Apply for Leave</DialogTitle></DialogHeader>
+              <form onSubmit={handleApplyLeave} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Leave Type</Label>
+                  <Select value={formData.leaveType} onValueChange={(v) => setFormData({...formData, leaveType: v})}>
+                    <SelectTrigger><SelectValue placeholder="Select leave type" /></SelectTrigger>
+                    <SelectContent>
+                      {leavePolicies.map(p => <SelectItem key={p.id} value={p.type}>{p.type}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Start Date</Label>
+                    <Input type="date" value={formData.startDate} onChange={(e) => setFormData({...formData, startDate: e.target.value})} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>End Date</Label>
+                    <Input type="date" value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} required />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Reason</Label>
+                  <Textarea value={formData.reason} onChange={(e) => setFormData({...formData, reason: e.target.value})} required />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                  <Button type="submit">Submit Request</Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
-
-      <Tabs defaultValue="requests" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="requests">
-            Leave Requests
-            {pendingCount > 0 && (
-              <span className="ml-2 bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">
-                {pendingCount}
               </span>
             )}
           </TabsTrigger>

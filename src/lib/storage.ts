@@ -6,12 +6,16 @@ import {
   Document, 
   PayrollRecord, 
   AuditLog,
+  EmployeeAttendance,
+  AttendanceRecord,
   initialEmployees,
   initialLeaveRequests,
   initialLeavePolicies,
   initialDocuments,
   initialPayrollRecords,
-  initialAuditLogs
+  initialAuditLogs,
+  initialAttendanceRecords,
+  generateAttendanceCalendar
 } from './mockData';
 
 const STORAGE_KEYS = {
@@ -21,6 +25,7 @@ const STORAGE_KEYS = {
   DOCUMENTS: 'apu_hr_documents',
   PAYROLL: 'apu_hr_payroll',
   AUDIT_LOGS: 'apu_hr_audit_logs',
+  ATTENDANCE: 'apu_hr_attendance',
 };
 
 // Generic storage functions
@@ -147,6 +152,69 @@ export const addAuditLog = (action: string, module: string, details: string): Au
   logs.unshift(newLog);
   saveAuditLogs(logs);
   return newLog;
+};
+
+// Attendance functions
+export const getAttendanceRecords = (): EmployeeAttendance[] => 
+  getFromStorage(STORAGE_KEYS.ATTENDANCE, initialAttendanceRecords);
+export const saveAttendanceRecords = (records: EmployeeAttendance[]) => 
+  saveToStorage(STORAGE_KEYS.ATTENDANCE, records);
+
+export const updateEmployeeAttendance = (
+  employeeId: string, 
+  date: string, 
+  status: AttendanceRecord['status'],
+  checkIn?: string,
+  checkOut?: string
+): EmployeeAttendance | null => {
+  const records = getAttendanceRecords();
+  const empIndex = records.findIndex(r => r.employeeId === employeeId);
+  if (empIndex !== -1) {
+    const recordIndex = records[empIndex].records.findIndex(r => r.date === date);
+    if (recordIndex !== -1) {
+      records[empIndex].records[recordIndex] = {
+        date,
+        status,
+        checkIn: status === 'Present' ? (checkIn || records[empIndex].records[recordIndex].checkIn) : undefined,
+        checkOut: status === 'Present' ? (checkOut || records[empIndex].records[recordIndex].checkOut) : undefined,
+      };
+      saveAttendanceRecords(records);
+      addAuditLog('Updated', 'Attendance', `Updated attendance for ${records[empIndex].employeeName} on ${date}`);
+      return records[empIndex];
+    }
+  }
+  return null;
+};
+
+export const getAttendanceForDate = (date: string): { employeeId: string; employeeName: string; department: string; record: AttendanceRecord }[] => {
+  const records = getAttendanceRecords();
+  return records.map(emp => {
+    const record = emp.records.find(r => r.date === date) || {
+      date,
+      status: 'Absent' as const,
+    };
+    return {
+      employeeId: emp.employeeId,
+      employeeName: emp.employeeName,
+      department: emp.department,
+      record,
+    };
+  });
+};
+
+export const regenerateAttendanceForMonth = (year: number, month: number): void => {
+  const records = getAttendanceRecords();
+  const newRecords = generateAttendanceCalendar(year, month);
+  
+  records.forEach(emp => {
+    emp.records = newRecords.map(r => ({
+      ...r,
+      checkIn: r.status === 'Present' ? '08:' + String(Math.floor(Math.random() * 30)).padStart(2, '0') : undefined,
+      checkOut: r.status === 'Present' ? '17:' + String(Math.floor(Math.random() * 30) + 30).padStart(2, '0') : undefined,
+    }));
+  });
+  
+  saveAttendanceRecords(records);
 };
 
 // Reset all data

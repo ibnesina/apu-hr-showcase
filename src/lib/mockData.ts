@@ -41,6 +41,13 @@ export interface AttendanceRecord {
   checkOut?: string;
 }
 
+export interface EmployeeAttendance {
+  employeeId: string;
+  employeeName: string;
+  department: string;
+  records: AttendanceRecord[];
+}
+
 export interface PayrollRecord {
   id: string;
   employeeId: string;
@@ -192,3 +199,19 @@ export const generateAttendanceCalendar = (year: number, month: number): Attenda
   
   return records;
 };
+
+// Generate initial attendance data for all employees
+export const generateInitialAttendance = (): EmployeeAttendance[] => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  
+  return initialEmployees.map(emp => ({
+    employeeId: emp.id,
+    employeeName: emp.name,
+    department: emp.department,
+    records: generateAttendanceCalendar(year, month),
+  }));
+};
+
+export const initialAttendanceRecords: EmployeeAttendance[] = generateInitialAttendance();
