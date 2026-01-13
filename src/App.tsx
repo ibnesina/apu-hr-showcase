@@ -19,6 +19,10 @@ import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Notifications from "./pages/Notifications";
 import AuditLogs from "./pages/AuditLogs";
+import AppraisalCycles from "./pages/AppraisalCycles";
+import MyAppraisal from "./pages/MyAppraisal";
+import AppraisalReviews from "./pages/AppraisalReviews";
+import AppraisalReports from "./pages/AppraisalReports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +54,10 @@ function AppRoutes() {
       <Route path="/holidays" element={<ProtectedRoute adminOnly><HolidayManagement /></ProtectedRoute>} />
       <Route path="/payroll-setup" element={<ProtectedRoute adminOnly><PayrollSetup /></ProtectedRoute>} />
       <Route path="/payroll" element={<ProtectedRoute><Payroll /></ProtectedRoute>} />
+      <Route path="/appraisal-cycles" element={<ProtectedRoute adminOnly><AppraisalCycles /></ProtectedRoute>} />
+      <Route path="/my-appraisal" element={<ProtectedRoute><MyAppraisal /></ProtectedRoute>} />
+      <Route path="/appraisal-reviews" element={<ProtectedRoute adminOnly><AppraisalReviews /></ProtectedRoute>} />
+      <Route path="/appraisal-reports" element={<ProtectedRoute adminOnly><AppraisalReports /></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/audit-logs" element={<ProtectedRoute adminOnly><AuditLogs /></ProtectedRoute>} />
