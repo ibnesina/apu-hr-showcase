@@ -79,17 +79,24 @@ export default function AppraisalCycles() {
   };
 
   const getDateRange = () => {
+    const year = formData.year || new Date().getFullYear();
+    const month = formData.month || 1;
+    
     if (formData.cycleType === 'monthly') {
-      const startDate = new Date(formData.year, formData.month - 1, 1);
-      const endDate = new Date(formData.year, formData.month, 0);
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0);
+      // Validate dates before calling toISOString
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return { startDate: '', endDate: '' };
+      }
       return {
         startDate: startDate.toISOString().split('T')[0],
         endDate: endDate.toISOString().split('T')[0],
       };
     }
     return {
-      startDate: `${formData.year}-01-01`,
-      endDate: `${formData.year}-12-31`,
+      startDate: `${year}-01-01`,
+      endDate: `${year}-12-31`,
     };
   };
 
