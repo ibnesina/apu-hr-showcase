@@ -283,18 +283,14 @@ export default function MyAppraisal() {
               </div>
               <div className="space-y-2">
                 <Label>Month</Label>
-                <Select value={selectedMonth?.toString() || ''} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
+                <Select value={selectedMonth ? selectedMonth.toString() : undefined} onValueChange={(v) => setSelectedMonth(parseInt(v))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableMonths.length > 0 ? (
-                      availableMonths.map(m => (
-                        <SelectItem key={m} value={m.toString()}>{MONTHS[m - 1]}</SelectItem>
-                      ))
-                    ) : (
-                      <SelectItem value="" disabled>No active cycles available</SelectItem>
-                    )}
+                    {availableMonths.map(m => (
+                      <SelectItem key={m} value={m.toString()}>{MONTHS[m - 1]}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 {availableMonths.length === 0 && (
