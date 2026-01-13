@@ -867,24 +867,17 @@ export const generateSystemScores = (employeeId: string, attendanceSummary?: App
   };
 };
 
-// Get available months for creating appraisals
+// Get available months for creating appraisals - ONLY returns months with Active cycles
 export const getAvailableMonthsForAppraisal = (employeeId: string, year: number): number[] => {
   const existingAppraisals = getMonthlyAppraisalsByEmployee(employeeId, year);
   const existingMonths = existingAppraisals.map(a => a.month).filter(Boolean) as number[];
   
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
+  // Get all ACTIVE monthly cycles for the year
+  const activeCycles = getAppraisalCycles().filter(
+    c => c.cycleType === 'monthly' && c.year === year && c.status === 'Active'
+  );
+  const activeMonths = activeCycles.map(c => c.month).filter(Boolean) as number[];
   
-  const availableMonths: number[] = [];
-  for (let m = 1; m <= 12; m++) {
-    // Can create appraisal for past months or current month
-    if (year < currentYear || (year === currentYear && m <= currentMonth)) {
-      if (!existingMonths.includes(m)) {
-        availableMonths.push(m);
-      }
-    }
-  }
-  
-  return availableMonths;
+  // Return active months that don't already have an appraisal
+  return activeMonths.filter(m => !existingMonths.includes(m));
 };

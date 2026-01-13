@@ -293,12 +293,15 @@ export default function MyAppraisal() {
                         <SelectItem key={m} value={m.toString()}>{MONTHS[m - 1]}</SelectItem>
                       ))
                     ) : (
-                      <SelectItem value="" disabled>No available months</SelectItem>
+                      <SelectItem value="" disabled>No active cycles available</SelectItem>
                     )}
                   </SelectContent>
                 </Select>
                 {availableMonths.length === 0 && (
-                  <p className="text-xs text-muted-foreground">All months have been created for {selectedYear}</p>
+                  <p className="text-xs text-muted-foreground">
+                    No active appraisal cycles available for {selectedYear}. 
+                    Please contact HR to activate cycles.
+                  </p>
                 )}
               </div>
             </div>

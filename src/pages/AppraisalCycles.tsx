@@ -103,36 +103,45 @@ export default function AppraisalCycles() {
 
     const dates = getDateRange();
 
-    if (editingCycle) {
-      updateAppraisalCycle(editingCycle.id, { 
-        name: getCycleName(),
-        ...dates,
-        criteria,
-        cycleType: formData.cycleType,
-        month: formData.cycleType === 'monthly' ? formData.month : undefined,
-        year: formData.year,
-        status: formData.status,
-      });
-      addAuditLog('Updated', 'Appraisal Cycle', `Updated cycle: ${getCycleName()}`);
-      toast.success('Appraisal cycle updated');
-    } else {
-      addAppraisalCycle({ 
-        name: getCycleName(),
-        ...dates,
-        criteria, 
-        createdBy: 'Admin',
-        cycleType: formData.cycleType,
-        month: formData.cycleType === 'monthly' ? formData.month : undefined,
-        year: formData.year,
-        status: formData.status,
-      });
-      addAuditLog('Created', 'Appraisal Cycle', `Created new cycle: ${getCycleName()}`);
-      toast.success('Appraisal cycle created');
-    }
+    try {
+      if (editingCycle) {
+        updateAppraisalCycle(editingCycle.id, { 
+          name: getCycleName(),
+          ...dates,
+          criteria,
+          cycleType: formData.cycleType,
+          month: formData.cycleType === 'monthly' ? formData.month : undefined,
+          year: formData.year,
+          status: formData.status,
+        });
+        addAuditLog('Updated', 'Appraisal Cycle', `Updated cycle: ${getCycleName()}`);
+        toast.success('Appraisal cycle updated');
+      } else {
+        addAppraisalCycle({ 
+          name: getCycleName(),
+          ...dates,
+          criteria, 
+          createdBy: 'Admin',
+          cycleType: formData.cycleType,
+          month: formData.cycleType === 'monthly' ? formData.month : undefined,
+          year: formData.year,
+          status: formData.status,
+        });
+        addAuditLog('Created', 'Appraisal Cycle', `Created new cycle: ${getCycleName()}`);
+        toast.success('Appraisal cycle created');
+      }
 
-    loadCycles();
-    setIsDialogOpen(false);
-    resetForm();
+      // Close dialog first, then update state
+      setIsDialogOpen(false);
+      resetForm();
+      // Use setTimeout to allow dialog animation to complete
+      setTimeout(() => {
+        loadCycles();
+      }, 100);
+    } catch (error) {
+      console.error('Error saving cycle:', error);
+      toast.error('Failed to save appraisal cycle');
+    }
   };
 
   const handleEdit = (cycle: AppraisalCycle) => {
