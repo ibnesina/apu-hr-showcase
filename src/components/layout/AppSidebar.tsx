@@ -13,6 +13,10 @@ import {
   Clock,
   CalendarDays,
   Settings,
+  Award,
+  Star,
+  ClipboardCheck,
+  TrendingUp,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -27,6 +31,9 @@ const adminMenuItems = [
   { title: 'Holidays', url: '/holidays', icon: CalendarDays },
   { title: 'Payroll Setup', url: '/payroll-setup', icon: Settings },
   { title: 'Payroll', url: '/payroll', icon: DollarSign },
+  { title: 'Appraisal Cycles', url: '/appraisal-cycles', icon: Award },
+  { title: 'Appraisal Reviews', url: '/appraisal-reviews', icon: ClipboardCheck },
+  { title: 'Appraisal Reports', url: '/appraisal-reports', icon: TrendingUp },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
   { title: 'Audit Logs', url: '/audit-logs', icon: History },
   { title: 'Notifications', url: '/notifications', icon: Bell },
@@ -36,6 +43,7 @@ const facultyMenuItems = [
   { title: 'My Dashboard', url: '/faculty-dashboard', icon: Home },
   { title: 'My Attendance', url: '/attendance', icon: Calendar },
   { title: 'My Leaves', url: '/leave', icon: ClipboardList },
+  { title: 'My Appraisal', url: '/my-appraisal', icon: Star },
   { title: 'My Payslips', url: '/payroll', icon: DollarSign },
   { title: 'Documents', url: '/documents', icon: FileText },
   { title: 'Notifications', url: '/notifications', icon: Bell },
