@@ -17,6 +17,9 @@ import {
   Star,
   ClipboardCheck,
   TrendingUp,
+  Briefcase,
+  UserPlus,
+  Video,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -34,6 +37,10 @@ const adminMenuItems = [
   { title: 'Appraisal Cycles', url: '/appraisal-cycles', icon: Award },
   { title: 'Appraisal Reviews', url: '/appraisal-reviews', icon: ClipboardCheck },
   { title: 'Appraisal Reports', url: '/appraisal-reports', icon: TrendingUp },
+  { title: 'Job Openings', url: '/job-openings', icon: Briefcase },
+  { title: 'Applications', url: '/applications', icon: UserPlus },
+  { title: 'Interviews', url: '/interviews', icon: Video },
+  { title: 'Recruitment Reports', url: '/recruitment-reports', icon: BarChart3 },
   { title: 'Reports', url: '/reports', icon: BarChart3 },
   { title: 'Audit Logs', url: '/audit-logs', icon: History },
   { title: 'Notifications', url: '/notifications', icon: Bell },

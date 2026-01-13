@@ -23,6 +23,11 @@ import AppraisalCycles from "./pages/AppraisalCycles";
 import MyAppraisal from "./pages/MyAppraisal";
 import AppraisalReviews from "./pages/AppraisalReviews";
 import AppraisalReports from "./pages/AppraisalReports";
+import JobOpenings from "./pages/JobOpenings";
+import Careers from "./pages/Careers";
+import Applications from "./pages/Applications";
+import Interviews from "./pages/Interviews";
+import RecruitmentReports from "./pages/RecruitmentReports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +63,11 @@ function AppRoutes() {
       <Route path="/my-appraisal" element={<ProtectedRoute><MyAppraisal /></ProtectedRoute>} />
       <Route path="/appraisal-reviews" element={<ProtectedRoute adminOnly><AppraisalReviews /></ProtectedRoute>} />
       <Route path="/appraisal-reports" element={<ProtectedRoute adminOnly><AppraisalReports /></ProtectedRoute>} />
+      <Route path="/job-openings" element={<ProtectedRoute adminOnly><JobOpenings /></ProtectedRoute>} />
+      <Route path="/careers" element={<Careers />} />
+      <Route path="/applications" element={<ProtectedRoute adminOnly><Applications /></ProtectedRoute>} />
+      <Route path="/interviews" element={<ProtectedRoute adminOnly><Interviews /></ProtectedRoute>} />
+      <Route path="/recruitment-reports" element={<ProtectedRoute adminOnly><RecruitmentReports /></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute adminOnly><Reports /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/audit-logs" element={<ProtectedRoute adminOnly><AuditLogs /></ProtectedRoute>} />
