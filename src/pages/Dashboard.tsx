@@ -1,19 +1,50 @@
+import { useState, useEffect } from 'react';
 import { Users, Calendar, ClipboardList, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { dashboardStats } from '@/lib/mockData';
+import { getEmployees, getLeaveRequests } from '@/lib/storage';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line } from 'recharts';
 
 const COLORS = ['#8B1538', '#A91E47', '#C72756', '#E53065', '#FF4D7A', '#FF6B8A'];
 
 export default function Dashboard() {
+  const [employeeStats, setEmployeeStats] = useState({ total: 0, active: 0 });
+  const [pendingLeaves, setPendingLeaves] = useState(0);
+  const [departmentDist, setDepartmentDist] = useState(dashboardStats.departmentDistribution);
+
+  useEffect(() => {
+    // Calculate dynamic employee statistics
+    const employees = getEmployees();
+    const activeEmployees = employees.filter(emp => emp.status === 'Active');
+
+    setEmployeeStats({
+      total: employees.length,
+      active: activeEmployees.length
+    });
+
+    // Calculate department distribution dynamically
+    const deptCount: Record<string, number> = {};
+    employees.forEach(emp => {
+      deptCount[emp.department] = (deptCount[emp.department] || 0) + 1;
+    });
+
+    const deptDistribution = Object.entries(deptCount).map(([name, value]) => ({ name, value }));
+    setDepartmentDist(deptDistribution);
+
+    // Calculate pending leave requests
+    const leaveRequests = getLeaveRequests();
+    const pending = leaveRequests.filter(req => req.status === 'Pending').length;
+    setPendingLeaves(pending);
+  }, []);
+
   const stats = dashboardStats;
 
   const kpiCards = [
     {
       title: 'Total Employees',
-      value: stats.totalEmployees,
-      subtitle: `${stats.activeEmployees} Active`,
+      value: employeeStats.total,
+      subtitle: `${employeeStats.active} Active`,
       icon: Users,
       trend: '+2 this month',
       trendUp: true,
@@ -28,7 +59,7 @@ export default function Dashboard() {
     },
     {
       title: 'Pending Leave',
-      value: stats.pendingLeaveRequests,
+      value: pendingLeaves,
       subtitle: 'Requests to review',
       icon: ClipboardList,
       trend: '2 urgent',
@@ -93,7 +124,7 @@ export default function Dashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={stats.departmentDistribution}
+                    data={departmentDist}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -103,7 +134,7 @@ export default function Dashboard() {
                     label={({ name, value }) => `${name}: ${value}`}
                     labelLine={false}
                   >
-                    {stats.departmentDistribution.map((_, index) => (
+                    {departmentDist.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -126,10 +157,10 @@ export default function Dashboard() {
                   <XAxis dataKey="month" axisLine={false} tickLine={false} />
                   <YAxis domain={[80, 100]} axisLine={false} tickLine={false} />
                   <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="attendance" 
-                    stroke="#8B1538" 
+                  <Line
+                    type="monotone"
+                    dataKey="attendance"
+                    stroke="#8B1538"
                     strokeWidth={3}
                     dot={{ fill: '#8B1538', strokeWidth: 2 }}
                   />
