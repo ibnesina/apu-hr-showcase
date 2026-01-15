@@ -65,7 +65,6 @@ export interface AIGeneratedScores {
 }
 
 export interface SystemScores {
-  teaching: number;
   studentFeedback: number;
   attendance: number;
 }
@@ -124,13 +123,12 @@ const STORAGE_KEYS = {
   APPRAISALS: 'apu_hr_appraisals',
 };
 
-// Default evaluation criteria
+// Default evaluation criteria (4 criteria - Teaching Performance removed)
 export const defaultCriteria: AppraisalCriterion[] = [
-  { id: 'teaching', name: 'Teaching Performance', weightage: 30, description: 'Quality of lectures, student engagement, and teaching methodology' },
-  { id: 'research', name: 'Research & Publications', weightage: 25, description: 'Research output, publications, and academic contributions' },
-  { id: 'admin', name: 'Administrative Contribution', weightage: 15, description: 'Committee work, administrative duties, and institutional service' },
-  { id: 'feedback', name: 'Student Feedback', weightage: 15, description: 'Student satisfaction and feedback scores' },
-  { id: 'attendance', name: 'Attendance', weightage: 15, description: 'Punctuality, presence, and availability' },
+  { id: 'research', name: 'Research & Publications', weightage: 30, description: 'Research output, publications, and academic contributions' },
+  { id: 'admin', name: 'Administrative Contribution', weightage: 25, description: 'Committee work, administrative duties, and institutional service' },
+  { id: 'feedback', name: 'Student Feedback', weightage: 25, description: 'Student satisfaction and feedback scores' },
+  { id: 'attendance', name: 'Attendance', weightage: 20, description: 'Punctuality, presence, and availability' },
 ];
 
 // Get month name
@@ -235,7 +233,6 @@ const initialAppraisals: Appraisal[] = [
       generatedAt: '2025-01-05T10:05:00Z',
     },
     systemScores: {
-      teaching: 8,
       studentFeedback: 9,
       attendance: 9,
     },
@@ -281,19 +278,16 @@ const initialAppraisals: Appraisal[] = [
       generatedAt: '2024-12-15T09:00:00Z',
     },
     systemScores: {
-      teaching: 9,
       studentFeedback: 8,
       attendance: 9,
     },
     selfAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', score: 9, comments: 'End of semester reviews positive' },
       { criterionId: 'research', criterionName: 'Research & Publications', score: 7, comments: 'ICML conference paper' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', score: 8, comments: 'Exam coordination' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', score: 8, comments: 'Good semester feedback' },
       { criterionId: 'attendance', criterionName: 'Attendance', score: 9, comments: 'Excellent attendance' },
     ],
     reviewerAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', selfScore: 9, reviewerScore: 9, reviewerComments: 'Excellent teaching' },
       { criterionId: 'research', criterionName: 'Research & Publications', selfScore: 7, reviewerScore: 7, reviewerComments: 'Good research output' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', selfScore: 8, reviewerScore: 8, reviewerComments: 'Great coordination work' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', selfScore: 8, reviewerScore: 8, reviewerComments: 'Consistent feedback' },
@@ -370,12 +364,10 @@ const initialAppraisals: Appraisal[] = [
       generatedAt: '2025-01-10T12:00:00Z',
     },
     systemScores: {
-      teaching: 9,
       studentFeedback: 8,
       attendance: 8,
     },
     selfAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', score: 9, comments: 'Case-study approach' },
       { criterionId: 'research', criterionName: 'Research & Publications', score: 9, comments: 'Book chapter + HBR case' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', score: 9, comments: 'MBA coordination + mentoring' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', score: 8, comments: 'Positive MBA feedback' },
@@ -423,19 +415,16 @@ const initialAppraisals: Appraisal[] = [
       generatedAt: '2025-01-08T10:00:00Z',
     },
     systemScores: {
-      teaching: 8,
       studentFeedback: 8,
       attendance: 9,
     },
     selfAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', score: 8, comments: 'Practical engineering focus' },
       { criterionId: 'research', criterionName: 'Research & Publications', score: 9, comments: 'High-impact journal' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', score: 7, comments: 'Safety committee' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', score: 8, comments: 'Good lab feedback' },
       { criterionId: 'attendance', criterionName: 'Attendance', score: 9, comments: 'Excellent attendance' },
     ],
     reviewerAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', selfScore: 8, reviewerScore: 8, reviewerComments: 'Practical approach' },
       { criterionId: 'research', criterionName: 'Research & Publications', selfScore: 9, reviewerScore: 9, reviewerComments: 'Excellent publication' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', selfScore: 7, reviewerScore: 7, reviewerComments: 'Good safety management' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', selfScore: 8, reviewerScore: 8, reviewerComments: 'Consistent feedback' },
@@ -493,19 +482,16 @@ const initialAppraisals: Appraisal[] = [
       generatedAt: '2024-11-22T09:00:00Z',
     },
     systemScores: {
-      teaching: 8,
       studentFeedback: 8,
       attendance: 9,
     },
     selfAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', score: 8, comments: 'Good teaching delivery' },
       { criterionId: 'research', criterionName: 'Research & Publications', score: 7, comments: 'Journal publication' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', score: 8, comments: 'Accreditation work' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', score: 8, comments: 'Positive feedback' },
       { criterionId: 'attendance', criterionName: 'Attendance', score: 9, comments: 'Excellent' },
     ],
     reviewerAssessments: [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', selfScore: 8, reviewerScore: 8, reviewerComments: 'Good' },
       { criterionId: 'research', criterionName: 'Research & Publications', selfScore: 7, reviewerScore: 7, reviewerComments: 'Solid output' },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', selfScore: 8, reviewerScore: 8, reviewerComments: 'Excellent accreditation prep' },
       { criterionId: 'feedback', criterionName: 'Student Feedback', selfScore: 8, reviewerScore: 8, reviewerComments: 'Good' },
@@ -552,7 +538,7 @@ const initialAppraisals: Appraisal[] = [
     finalRecommendations: 'Based on consistent monthly performance, Dr. Johnson is recommended for promotion consideration.',
     attendanceSummary: { totalWorkingDays: 240, presentDays: 228, absentDays: 2, leaveDays: 10, lateCount: 5, attendancePercentage: 95 },
     aiInsights: {
-      overallSummary: 'Annual summary based on 12 monthly appraisals. Dr. Sarah Johnson maintained excellent performance throughout 2024 with an average score of 8.1. Strong in teaching and research with consistent attendance.',
+      overallSummary: 'Annual summary based on 12 monthly appraisals. Dr. Sarah Johnson maintained excellent performance throughout 2024 with an average score of 8.1. Strong in research and administrative contributions with consistent attendance.',
       strengths: ['Consistent excellence across all months', 'Strong publication record', 'Reliable attendance'],
       areasForImprovement: ['Increase industry collaboration'],
       trainingSuggestions: ['Leadership development for future department head role'],
@@ -770,9 +756,6 @@ export const generateAIInsights = (appraisal: Appraisal): AIInsights => {
       if (assessment.criterionName.includes('Research')) {
         trainingSuggestions.push('Research methodology workshop recommended');
       }
-      if (assessment.criterionName.includes('Teaching')) {
-        trainingSuggestions.push('Pedagogy enhancement program suggested');
-      }
     }
   });
   
@@ -796,7 +779,7 @@ export const generateAIInsights = (appraisal: Appraisal): AIInsights => {
   // Generate summary based on score
   let overallSummary = '';
   if (avgScore >= 8) {
-    overallSummary = `${appraisal.employeeName} demonstrates exceptional performance across all evaluation criteria. The faculty shows strong dedication to academic excellence with consistent delivery of high-quality teaching and research output.`;
+    overallSummary = `${appraisal.employeeName} demonstrates exceptional performance across all evaluation criteria. The faculty shows strong dedication to academic excellence with consistent research output and administrative contributions.`;
   } else if (avgScore >= 6) {
     overallSummary = `${appraisal.employeeName} shows good overall performance with notable strengths in core competencies. There are opportunities for improvement that, when addressed, will elevate the overall performance profile.`;
   } else {
@@ -857,11 +840,10 @@ export const calculateAttendanceScore = (summary: Appraisal['attendanceSummary']
   return Math.max(1, score);
 };
 
-// Generate mock system scores (Teaching, Student Feedback, Attendance)
+// Generate mock system scores (Student Feedback, Attendance)
 export const generateSystemScores = (employeeId: string, attendanceSummary?: Appraisal['attendanceSummary']): SystemScores => {
   // Mock data - would come from respective modules
   return {
-    teaching: Math.floor(Math.random() * 3) + 7, // 7-9
     studentFeedback: Math.floor(Math.random() * 3) + 7, // 7-9
     attendance: attendanceSummary ? calculateAttendanceScore(attendanceSummary) : 8,
   };

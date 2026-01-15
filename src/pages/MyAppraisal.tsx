@@ -199,9 +199,8 @@ export default function MyAppraisal() {
 
     const aiScores = generateAIScoresForEntry(researchEntries, adminContributions);
 
-    // Build self assessments from all scores
+    // Build self assessments from all scores (4 criteria)
     const selfAssessments = [
-      { criterionId: 'teaching', criterionName: 'Teaching Performance', score: selectedAppraisal.systemScores?.teaching || 7, comments: 'System-generated from Teaching Performance module' },
       { criterionId: 'research', criterionName: 'Research & Publications', score: aiScores.research, comments: aiScores.reasoning },
       { criterionId: 'admin', criterionName: 'Administrative Contribution', score: aiScores.admin, comments: `Based on ${adminContributions.length} contribution(s)` },
       { criterionId: 'feedback', criterionName: 'Student Feedback', score: selectedAppraisal.systemScores?.studentFeedback || 7, comments: 'System-generated from Student Feedback module' },
@@ -612,16 +611,7 @@ export default function MyAppraisal() {
                     <CardDescription>These scores are automatically derived from respective modules (read-only)</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-3 gap-4">
-                      <Card className="bg-blue-50 border-blue-200">
-                        <CardContent className="pt-4 text-center">
-                          <p className="text-3xl font-bold text-blue-600">
-                            {selectedAppraisal.systemScores?.teaching || '-'}/10
-                          </p>
-                          <p className="text-sm text-muted-foreground mt-1">Teaching Performance</p>
-                          <p className="text-xs text-muted-foreground mt-2">From Teaching Module</p>
-                        </CardContent>
-                      </Card>
+                    <div className="grid grid-cols-2 gap-4">
                       <Card className="bg-purple-50 border-purple-200">
                         <CardContent className="pt-4 text-center">
                           <p className="text-3xl font-bold text-purple-600">
@@ -779,11 +769,7 @@ export default function MyAppraisal() {
                       <CardTitle>Submission Preview</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-5 gap-2 text-center text-sm">
-                        <div className="p-3 rounded border">
-                          <p className="font-bold">{selectedAppraisal.systemScores?.teaching || '-'}</p>
-                          <p className="text-xs text-muted-foreground">Teaching</p>
-                        </div>
+                      <div className="grid grid-cols-4 gap-2 text-center text-sm">
                         <div className="p-3 rounded border">
                           <p className="font-bold">{researchEntries.length > 0 ? generateAIScoresForEntry(researchEntries, []).research : '-'}</p>
                           <p className="text-xs text-muted-foreground">Research</p>
